@@ -2,6 +2,7 @@
 
 import json
 import requests
+import ipaddr
 
 
 url = "https://ip-ranges.amazonaws.com/ip-ranges.json"
@@ -16,6 +17,10 @@ region = region.lower()
 
 #reads dictionary from each index iteration in JSON file
 for awsnetworks in b["prefixes"]:
+	prefix = awsnetworks["ip_prefix"]
+	net = ipaddr.IPNetwork(prefix)
 	if svc in awsnetworks["service"] and region in awsnetworks["region"]:
 		print(awsnetworks["ip_prefix"] + " # " + awsnetworks["region"] + " " + awsnetworks["service"] + "\r")
+	elif svc.overlaps(net) == True:
+		print(awsnetworks["ip_prefix"] + " # " + awsnetworks["region"] + " " + awsnetworks["service"] + "\r") 
 		
